@@ -1,4 +1,4 @@
-from .server import IServer
+from .IServer import IServer
 
 __all__ = [
     'IServer'
