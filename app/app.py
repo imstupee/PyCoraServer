@@ -1,5 +1,7 @@
 from .context import AppContext
-from config import CoraConfig
+from config import ConfigLoader
+
+from server import CoraServer
 
 from app.windows import ServerMainWindow
 
@@ -9,9 +11,10 @@ import qasync
 import asyncio
 
 class CoraServerApplication:
-    def __init__(self, config: CoraConfig = None):
+    def __init__(self, config: ConfigLoader = None):
         self.app = QApplication()
-        self.app_context: AppContext = AppContext()
+        self.server = CoraServer(config)
+        self.app_context: AppContext = AppContext(config, self.server.get_api())
 
         self.loop = qasync.QEventLoop(self.app)
         asyncio.set_event_loop(self.loop)

@@ -1,5 +1,2 @@
 from .app import CoraServerApplication
-
-__all__ = [
-    'CoraServerApplication'
-]
+from .context import AppContext

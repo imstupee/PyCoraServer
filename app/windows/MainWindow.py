@@ -1,9 +1,10 @@
-from PySide6.QtWidgets import QMainWindow, QListWidgetItem
+
+from app.custom.QMainWindow import QMainWindow_
 from app.layouts.layout_MainWindow import Ui_MainWindow
 from qasync import asyncSlot
 import asyncio
 
-class ServerMainWindow(QMainWindow):
+class ServerMainWindow(QMainWindow_):
     window_name = "ServerMainWindow"
     def __init__(self):
         super().__init__()

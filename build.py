@@ -18,7 +18,8 @@ def build_exe():
 
     args = [
         'pyinstaller',
-        '--windowed',
+        #'--windowed',
+        '--onefile',
         '--noconfirm',
         '--name', PROJECT_NAME,
         '--distpath', OUTPUT_DIR_NAME,

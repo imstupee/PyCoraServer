@@ -1,5 +1,5 @@
-from .config import CoraConfig
+from .config import ConfigLoader
 
 __all__ = [
-    'CoraConfig'
+    'ConfigLoader'
 ]
