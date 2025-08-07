@@ -1,15 +1,16 @@
-from core.signal import Signal
+from shared.signal import Signal
 
 import asyncio
 import inspect
 from datetime import datetime
 
 class LogDispatcher:
+    queue = asyncio.Queue()
+    log_track = []
+    is_running = True
+    dispatch = Signal()
     def __init__(self):
-        self.queue = asyncio.Queue()
-        self.log_track = []
-        self.is_running = True
-        self.dispatch = Signal()
+        pass
 
     async def handle(self):
         while self.is_running:

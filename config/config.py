@@ -18,7 +18,7 @@ CONFIG_FILE = "config.yaml"
 
 class ConfigLoader:
     def __init__(self):
-        pass
+        self.BASE_DIR = BASE_DIR
 
     def load(self):
         data = self.read()

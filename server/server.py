@@ -4,13 +4,15 @@ from api import ServerAPI
 from server.services import ServiceRegistry
 from shared.utils import get_local_address
 from server.models import ClientSession
+from api.log_dispatcher import LogDispatcher
 
 import asyncio
 import socket
 
 class CoraServer(IServer):
-    def __init__(self, config: ConfigLoader = None):
-        self.svc_reg: ServiceRegistry = ServiceRegistry()
+    def __init__(self, config: ConfigLoader = None, dispatcher: LogDispatcher = None):
+        self.dispatcher = dispatcher
+        self.svc_reg: ServiceRegistry = ServiceRegistry(config, dispatcher)
         self.config: ConfigLoader = config
 
         self.host = self.config.host if self.config.host != "local" else get_local_address()
@@ -22,6 +24,7 @@ class CoraServer(IServer):
         self._running = False
 
     async def _start(self):
+        self.dispatcher.info("Starting server!")
         self._running = True
         self.bcast_task = asyncio.create_task(self.__start_broadcast())
         self.async_server = await asyncio.start_server(self.__wait_for_connection, self.host, self.con_port)
@@ -32,16 +35,19 @@ class CoraServer(IServer):
             pass
 
     async def _stop(self):
+        self.dispatcher.info("Stopping server!")
         self._running = False
         self.async_server.close()
         await self.async_server.wait_closed()
 
     async def __wait_for_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         session = ClientSession(reader, writer)
+        self.dispatcher.info(f"New unauthorized session {session.address} waiting for authorization...")
 
         # session = client_manager.register(reader, writer)
         # if await aut_service.wait_for_auth(session)
-        #   self.__handle_session(session)
+            # self.dispatcher.info(f"{session.address} authorized as {session.user.username}")
+            # self.__handle_session(session)  
 
         self.__handle_unauthorized(session)
 

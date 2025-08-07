@@ -3,11 +3,20 @@ class User:
     password: str
     _active: bool
 
-class UserProfile:
+    def __init__(self, _username: str, _password: str):
+        self.username = _username
+        self.password = _password
     
     def to_dict(self):
-        pass
+        return {
+            "username": self.username,
+            "h_password": self.password,
+            "active": self._active
+        }
 
     @classmethod
-    def to_obj(cls, data):
-        pass
+    def to_obj(cls, data: dict):
+        cls.username = data.get("username")
+        cls.password = data.get("h_password")
+        cls._active = data.get("active")
+        return cls
