@@ -1,6 +1,7 @@
 
 from app.custom.QMainWindow import QMainWindow_
 from app.layouts.layout_MainWindow import Ui_MainWindow
+from app.context import AppContext
 from qasync import asyncSlot
 import asyncio
 
@@ -10,3 +11,7 @@ class ServerMainWindow(QMainWindow_):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+    @asyncSlot()
+    def _on_buttonStartServer_clicked(self):
+        pass

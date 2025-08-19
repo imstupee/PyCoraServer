@@ -1,4 +1,4 @@
-from server.server import CoraServer
+"""from server.server import CoraServer
 from config import ConfigLoader
 import asyncio
 
@@ -12,4 +12,4 @@ async def main():
     while True:
         pass
 
-asyncio.run(main())
+asyncio.run(main())"""

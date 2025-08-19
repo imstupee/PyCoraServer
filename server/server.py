@@ -1,16 +1,16 @@
 from server.interfaces import IServer
 from config import ConfigLoader
-from api import ServerAPI
+from server.proxy import ServerProxy
 from server.services import ServiceRegistry
 from shared.utils import get_local_address
 from server.models import ClientSession
-from api.log_dispatcher import LogDispatcher
+from shared.log_dispatcher import LogDispatcher
 
 import asyncio
 import socket
 
 class CoraServer(IServer):
-    def __init__(self, config: ConfigLoader = None, dispatcher: LogDispatcher = None):
+    def __init__(self, config: ConfigLoader = None, dispatcher: LogDispatcher = None) -> None:
         self.dispatcher = dispatcher
         self.svc_reg: ServiceRegistry = ServiceRegistry(config, dispatcher)
         self.config: ConfigLoader = config
@@ -23,8 +23,11 @@ class CoraServer(IServer):
 
         self._running = False
 
-    async def _start(self):
+    async def _start(self) -> None:
         self.dispatcher.info("Starting server!")
+
+        self.svc_reg.start_services()
+
         self._running = True
         self.bcast_task = asyncio.create_task(self.__start_broadcast())
         self.async_server = await asyncio.start_server(self.__wait_for_connection, self.host, self.con_port)
@@ -34,7 +37,7 @@ class CoraServer(IServer):
         except asyncio.CancelledError: # When server stops there is a cancel error
             pass
 
-    async def _stop(self):
+    async def _stop(self) -> None:
         self.dispatcher.info("Stopping server!")
         self._running = False
         self.async_server.close()
@@ -51,7 +54,7 @@ class CoraServer(IServer):
 
         self.__handle_unauthorized(session)
 
-    async def __handle_unauthorized(self, session: ClientSession):
+    async def __handle_unauthorized(self, session: ClientSession) -> None:
         try:
             while self._running:
                 try:
@@ -80,7 +83,7 @@ class CoraServer(IServer):
         except ConnectionError as con_err:
             pass
 
-    async def __handle_session(self, session: ClientSession):
+    async def __handle_session(self, session: ClientSession) -> None:
         while self._running:
             try:
                 data = await session.recieve()
@@ -97,7 +100,7 @@ class CoraServer(IServer):
         await session.close() if session else None
 
 
-    async def __start_broadcast(self):
+    async def __start_broadcast(self) -> None:
         loop = asyncio.get_running_loop()
         bcast_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         bcast_sock.bind((self.host, self.bcast_port))
@@ -110,5 +113,5 @@ class CoraServer(IServer):
         
         bcast_sock.close()
 
-    def get_api(self):
-        return ServerAPI(self, self.svc_reg)
+    def get_proxy(self) -> ServerProxy: # Useless?
+        return ServerProxy(self, self.svc_reg)

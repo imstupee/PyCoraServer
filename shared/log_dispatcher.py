@@ -4,6 +4,7 @@ import asyncio
 import inspect
 from datetime import datetime
 
+
 class LogDispatcher:
     queue = asyncio.Queue()
     log_track = []
@@ -17,8 +18,12 @@ class LogDispatcher:
             self.dispatch.emit(await self.queue.get())
             await asyncio.sleep(0.5)
 
-    async def info(self, message):
+    async def info(self, message: str):
         module_name = (inspect.getmodule(inspect.getouterframes(inspect.currentframe())[0][1]).__name__).split('.')[-1]
         _message = f"({datetime.now().strftime('%H:%M:%S')}) <{module_name}> [INFO]" + " " + message
         await self.queue.put(_message)
-    
+
+    def info_nowait(self, message: str):
+        #module_name = (inspect.getmodule(inspect.getouterframes(inspect.currentframe())[0][1]).__name__).split('.')[-1]
+        _message = f"({datetime.now().strftime('%H:%M:%S')}) <Server> [INFO]" + " " + message
+        self.queue.put_nowait(_message)
